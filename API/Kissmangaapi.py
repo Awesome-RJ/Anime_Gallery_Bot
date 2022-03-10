@@ -23,7 +23,7 @@ class kissmangaapi():
                 mangaid = split2[0]
                 result = (manganame, mangaid)
                 res_search_list.append(result)
-            if res_search_list == []:
+            if not res_search_list:
                 return "Nothing Found"
             return res_search_list
         except requests.exceptions.ConnectionError:
@@ -38,10 +38,8 @@ class kissmangaapi():
             manga_title = soup.find("h1", class_="title-manga")
             image = soup.find("div", class_="media-left cover-detail").img
             image_link = image["src"]
-            genre_list = []
             genres = soup.find("p", class_="description-update").findAll("a")
-            for genre in genres:
-                genre_list.append(genre.text)
+            genre_list = [genre.text for genre in genres]
             latest_chap = soup.find("div", class_="total-chapter").find("a")
             latest_chapter = latest_chap.text
             latest_chapter_split = latest_chapter.split(' ')
@@ -59,8 +57,7 @@ class kissmangaapi():
             response_html = response.text
             soup = BeautifulSoup(response_html, 'lxml')
             chapter_pages = soup.find("p", id="arraydata")
-            pages = chapter_pages.text.split(",")
-            return pages
+            return chapter_pages.text.split(",")
         except AttributeError:
             return "Invalid Mangaid or chapter number"
         except requests.exceptions.ConnectionError:

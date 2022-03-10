@@ -22,10 +22,11 @@ class gogoanime():
                 urll = anime.a["href"]
                 r = urll.split('/')
                 res_list_search.append({"name":f"{tit}","animeid":f"{r[2]}"})
-            if res_list_search == []:
-                return {"status":"204", "reason":"No search results found for the query"}
-            else:
-                return res_list_search
+            return res_list_search or {
+                "status": "204",
+                "reason": "No search results found for the query",
+            }
+
         except requests.exceptions.ConnectionError:
             return {"status":"404", "reason":"Check the host's network Connection"}
 
@@ -46,9 +47,7 @@ class gogoanime():
             plot_summary = sum.join(pl)
             type_of_show = lis[0].a['title']
             ai = lis[2].find_all('a')
-            genres = []
-            for link in ai:
-                genres.append(link.get('title'))
+            genres = [link.get('title') for link in ai]
             year1 = lis[3].get_text()
             year2 = year1.split(" ")
             year = year2[1]
@@ -61,8 +60,18 @@ class gogoanime():
             last_ep_range = a_tag_sliced[-1]
             y = last_ep_range.split("-")
             ep_num = y[-1]
-            res_detail_search = {"title":f"{tit_url}", "year":f"{year}", "other_names":f"{oth_names}", "type":f"{type_of_show}", "status":f"{status}", "genre":f"{genres}", "episodes":f"{ep_num}", "image_url":f"{imgg}","plot_summary":f"{plot_summary}"}
-            return res_detail_search
+            return {
+                "title": f"{tit_url}",
+                "year": f"{year}",
+                "other_names": f"{oth_names}",
+                "type": f"{type_of_show}",
+                "status": f"{status}",
+                "genre": f"{genres}",
+                "episodes": f"{ep_num}",
+                "image_url": f"{imgg}",
+                "plot_summary": f"{plot_summary}",
+            }
+
         except AttributeError:
             return {"status":"400", "reason":"Invalid animeid"}
         except requests.exceptions.ConnectionError:
@@ -98,18 +107,14 @@ class gogoanime():
 
             downloadlink = []
             qualityname = []
-            for i in range(len(dow_url)):
-                downloadlink.append(dow_url[i].get('href'))
-                string = dow_url[i].string
+            string_original = ''
+            for item in dow_url:
+                downloadlink.append(item.get('href'))
+                string = item.string
                 string_spl = string.split()
                 string_spl.remove(string_spl[0])
-                string_original = ''
                 qualityname.append(string_original.join(string_spl))
-            episode_res_link = {}
-            for i in range(len(qualityname)):
-                episode_res_link[qualityname[i]] = downloadlink[i]
-
-            return episode_res_link
+            return {qualityname[i]: downloadlink[i] for i in range(len(qualityname))}
 
         except AttributeError:
             return {"status":"400", "reason":"Invalid animeid or episode_num"}
@@ -130,10 +135,11 @@ class gogoanime():
                 tit = anime.a["title"]
                 urll = anime.a["href"]
                 res_list_search.append({"name":f"{tit}","Id-Epnum":f"{urll[1:]}"})
-            if res_list_search == []:
-                return {"status":"204", "reason":"I have No Idea what the fuck went wrong"}
-            else:
-                return res_list_search
+            return res_list_search or {
+                "status": "204",
+                "reason": "I have No Idea what the fuck went wrong",
+            }
+
         except requests.exceptions.ConnectionError:
             return {"status":"404", "reason":"Check the host's network Connection"}
     

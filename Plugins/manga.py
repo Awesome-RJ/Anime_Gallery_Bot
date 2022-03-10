@@ -8,7 +8,7 @@ class Manga():
 
     @bot.on(events.NewMessage(pattern=r"^/manga|^/manga@Anime_Gallery_Robot"))
     async def event_handler_manga(event):
-        if '/manga' == event.raw_text:
+        if event.raw_text == '/manga':
             await bot.send_message(
                 event.chat_id,
                 'Command must be used like this\n/manga <name of manga>\nexample: /manga One Piece',
@@ -28,9 +28,10 @@ class Manga():
                 )
             else:
                 try:
-                    button= []
-                    for manga in results:
-                        button.append([Button.inline(manga[0], data=f"mid:{manga[1]}")])
+                    button = [
+                        [Button.inline(manga[0], data=f"mid:{manga[1]}")]
+                        for manga in results
+                    ]
 
                     await bot.send_message(
                         event.chat_id,

@@ -21,9 +21,7 @@ def format_home_results(home_results):
 
 def format_download_results(download_results):
     qualitys = list(download_results)
-    links = []
-    for i in qualitys:
-        links.append(download_results.get(i))
+    links = [download_results.get(i) for i in qualitys]
     result = ''
     for i in range(len(links)):
         result = f'{result}[{qualitys[i]}]({links[i]})\n'
@@ -34,14 +32,14 @@ def batch_download_txt(name, list_of_links):
     x = ''
     for i in list_of_links:
         y = i.get("(1080P-mp4)")
-        if y == None:
+        if y is None:
             y = i.get("(720P-mp4)")
-            if y == None:
-                y = i.get("(480P-mp4)")
-                if y == None:
-                    y = i.get("(360P-mp4)")
-                    if y == None:
-                        y = ''
+        if y is None:
+            y = i.get("(480P-mp4)")
+        if y is None:
+            y = i.get("(360P-mp4)")
+        if y is None:
+            y = ''
         x = f"{x}{y}\n"
     with open(f"{name}.txt", "w") as f:
         f.write(f"{x}")

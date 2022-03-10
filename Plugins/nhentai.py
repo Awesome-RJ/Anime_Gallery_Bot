@@ -7,7 +7,7 @@ class Nhentai():
 
     @bot.on(events.NewMessage(pattern="/nh"))
     async def event_handler_anime(event):
-        if '/nh' == event.raw_text:
+        if event.raw_text == '/nh':
             await bot.send_message(
                 event.chat_id,
                 'Command must be used like this\n/nh <hentai code\nexample: /nh 339989',

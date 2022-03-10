@@ -16,9 +16,7 @@ async def send_details(event, id):
     genre = search_details.get('genre')
     x = ''
     for i in genre:
-        if i == "'" or i == "[" or i == "]":
-            pass
-        else:
+        if i not in ["'", "[", "]"]:
             x = f'{x}{i}'
     await event.edit('Search Results:')
     try:

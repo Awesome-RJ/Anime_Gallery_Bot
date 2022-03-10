@@ -25,7 +25,7 @@ class Anime():
 
     @bot.on(events.NewMessage(pattern=r"^/anime|^/anime@Anime_Gallery_Robot"))
     async def event_handler_anime(event):
-        if '/anime' == event.raw_text:
+        if event.raw_text == '/anime':
             await bot.send_message(
                 event.chat_id,
                 'Command must be used like this\n/anime <name of anime>\nexample: /anime One Piece',
@@ -100,10 +100,12 @@ class Anime():
                     "Batch Download is capped at 100 episodes due to performance issues\nPlease download in batches of less than 100 for now"
                 )
                 return
-            list_of_links = []
             await event.reply("Be Patient this is a slow process....")
-            for i in range(int(split_data[1]), (int(split_data[2]) + 1)):
-                list_of_links.append(gogo.get_episodes_link(split_data[0], i))
+            list_of_links = [
+                gogo.get_episodes_link(split_data[0], i)
+                for i in range(int(split_data[1]), (int(split_data[2]) + 1))
+            ]
+
             format.batch_download_txt(split_data[0], list_of_links)
             await bot.send_message(
                 event.chat_id,
@@ -135,9 +137,6 @@ class Anime():
                 if (i+1) % 5 == 0:
                     button2.append([])
                     current_row = current_row + 1
-            await event.edit(
-                buttons=button2
-            )
         else:
             num_of_buttons = (int(x[2]) // 100)
             for i in range(num_of_buttons):
@@ -146,14 +145,13 @@ class Anime():
                 if (i+1) % 3 == 0:
                     button2.append([])
                     current_row = current_row + 1
-            if int(x[2]) % 100 == 0:
-                pass
-            else:
+            if int(x[2]) % 100 != 0:
                 button2[current_row].append(Button.inline(
                     f'{num_of_buttons}01 - {x[2]}', data=f'etz:{x[2]}:{x[1]}'))
-            await event.edit(
-                buttons=button2
-            )
+
+        await event.edit(
+            buttons=button2
+        )
 
     @bot.on(events.CallbackQuery(pattern=b"longdl"))
     async def callback_for_download_long(event):
@@ -173,10 +171,7 @@ class Anime():
             if (i+1) % 5 == 0:
                 button2.append([])
                 current_row = current_row + 1
-        await event.edit(
-            f'Choose Episode:',
-            buttons=button2
-        )
+        await event.edit('Choose Episode:', buttons=button2)
 
     @bot.on(events.CallbackQuery(pattern=b"btz:"))
     async def callback_for_choosebuttons(event):
@@ -204,7 +199,7 @@ class Anime():
         current_row = 0
         endnum = int(data_split[1])
         startnum = int(f'{endnum//100}01')
-        for i in range(startnum, (int(endnum)+1)):
+        for i in range(startnum, endnum + 1):
             button3[current_row].append(Button.inline(
                 str(i), data=f'ep:{i}:{data_split[2]}'))
             if i % 5 == 0:
